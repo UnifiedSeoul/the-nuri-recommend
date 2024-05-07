@@ -9,8 +9,7 @@ app = Flask(__name__)
 def get_user_data():
     if request.method == 'POST':
         request_data = request.get_json()
-        userJobInfoList = request_data.get("userJobInfoList")
-        recommend_jobId = recommendation(userJobInfoList)
+        recommend_jobId = recommendation(request_data)
         if recommend_jobId:
             # api 요청
             url = 'http://127.0.0.1:5000/api/recommend/result'
