@@ -21,6 +21,8 @@ from sentence_transformers import SentenceTransformer, util
 from sklearn.metrics.pairwise import cosine_similarity
 import requests
 import os
+from collections import OrderedDict
+
 
 def getJobList():
     host = 'thenuridatabase.cdagciaaigw0.ap-northeast-2.rds.amazonaws.com'
@@ -40,7 +42,7 @@ def getJobList():
 
     cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("SELECT * FROM thenuri.job")
+    cursor.execute("SELECT * FROM thenuri.job_info")
 
     result = cursor.fetchall()
     jobData = pd.DataFrame(result)
@@ -104,8 +106,8 @@ def getRecommendation(user_info):
     title_embedding_pos = os.path.join(file_dir, 'data', 'TitleEmbedding.npy')
     TitleEmbedding = np.load(title_embedding_pos)
     
-    jobs_pos = os.path.join(file_dir, 'data', 'Jobs.csv')
-    Jobs = pd.read_csv(jobs_pos)
+    # jobs_pos = os.path.join(file_dir, 'data', 'Jobs.csv')
+    # Jobs = pd.read_csv(jobs_pos)
 
     embedding_model_pos = os.path.join(file_dir, 'model', 'EmbeddingModel.pkl')
     with open(embedding_model_pos, 'rb') as f:
@@ -126,21 +128,31 @@ def getRecommendation(user_info):
 
     cos_sim = sorted(cos_sim, key=lambda x:-x[1])
     cos_sim = [x for x in cos_sim if x[1] >= 0]
-    top_1 = cos_sim[0][0]
+    # top_1 = cos_sim[0][0]
 
-    job_id_list = Jobs['job_id'].to_list()
-    print(Jobs.loc[Jobs.index==top_1, ['company_name', 'recruitment_title']])
-    return job_id_list[top_1]
+    # job_id_list = Jobs['job_id'].to_list()
+    # print(Jobs.loc[Jobs.index==top_1, ['company_name', 'recruitment_title']])
+    return cos_sim[:30]
 
 def recommendation(data):
     results = []
     for d in data:
+        print(d)
         input_recommend = d['jobPlace'] + " " + d['jobSpecific']
-        rec_id = getRecommendation(input_recommend)
-        results.append(rec_id)
+        rec_arr = getRecommendation(input_recommend)
+        results += rec_arr
     
-    return results
-
-# jobs = getJobList()
-# print('\nfinish getJobList...\n')
-# embeddingJobList(jobs)
+    results = sorted(results, key=lambda x:-x[1])
+    # print(results)
+    results = [x[0] for x in results]
+    results = list(OrderedDict.fromkeys(x for x in results))
+    
+    
+    file_dir = os.path.dirname(__file__)
+    jobs_pos = os.path.join(file_dir, 'data', 'Jobs.csv')
+    Jobs = pd.read_csv(jobs_pos)
+    job_id_list = Jobs['job_id'].to_list()
+    
+    ret = [job_id_list[x] for x in results]
+    print(ret)
+    return ret
