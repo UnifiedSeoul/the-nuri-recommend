@@ -156,3 +156,6 @@ def recommendation(data):
     ret = [job_id_list[x] for x in results]
     print(ret)
     return ret
+
+# jobs = getJobList()
+# embeddingJobList(jobs)
