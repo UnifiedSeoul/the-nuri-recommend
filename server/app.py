@@ -2,8 +2,11 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from flask import Flask, request, jsonify
 from recommend.RecommendJob import *
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+CORS(app, resources={r"/api/*": {"origins": "http://43.200.89.34"}})
 
 @app.route('/api/recommend', methods=['POST'])
 def get_user_data():
