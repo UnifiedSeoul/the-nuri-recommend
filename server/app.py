@@ -1,5 +1,6 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from waitress import serve
 from flask import Flask, request, jsonify
 from recommend.RecommendJob import *
 from flask_cors import CORS
@@ -26,4 +27,4 @@ def check_recommend():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    serve(app, host='0.0.0.0', port=5000)
