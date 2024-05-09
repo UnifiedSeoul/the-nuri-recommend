@@ -23,8 +23,8 @@ def setup_logging():
 @app.route('/api/recommend', methods=['POST'])
 def get_user_data():
     if request.method == 'POST':
-        print(request)
         request_data = request.get_json()
+        print(request_data)
         recommend_jobId = recommendation(request_data)
         print("send ", recommend_jobId)
         if recommend_jobId:
