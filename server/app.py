@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from waitress import serve
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from recommend.RecommendJob import *
 from flask_cors import CORS
 
