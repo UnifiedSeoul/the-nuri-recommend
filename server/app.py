@@ -18,7 +18,7 @@ def get_user_data():
         if recommend_jobId:
             return {"recommendJobId": recommend_jobId}, 200
         else:
-            return 400
+            abort(400)
 
 @app.route('/api/recommend/result', methods=['POST'])
 def check_recommend():
